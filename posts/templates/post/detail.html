@@ -7,18 +7,23 @@
   <h1>{{ post.title }}</h1>
 
   <!--Picture starting-->
+  <style>
+    .myDiv{
+      border: 15px outset red;
+      width:90%;
+      max-width:980px;
+      height:250px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+   </style>
 
   {% if post.image %}
   <img src="{{ post.image.url }}"class="myDiv">
   {% endif %}
 
- <style>
-  .myDiv{
-    border: 5px outset red;
-    height: 15rem;
-    witdh: 15rem;
-  }
- </style>
+
 
   <!--Picture Ending -->
 
@@ -26,7 +31,7 @@
  <!--Body Staring -->
   {{ post.body|linebreaks }}
    <!--Body Ending -->
-   <hr></hr>
+   <br>
 
 
   <p>
@@ -44,44 +49,10 @@
     {% endif %}
   </p>
  
-  <hr>
+  
 <!--Post ending-->
 
-<!--Similar_Post start-->
-<h2> SImilar Posts </h2>
-{% for post in similar_posts%}
-<p>
-  <a href="{{ post.get_absolute_url }}">{{ post.title}}</a>
-</p>
-{% empty %}
-There are no Posts yet.
-{% endfor%}
-<hr></hr>
-<!--Similar_Post ending-->
-
-<!--Comments start-->
-    {% with comments.count as total_comments %}
-  <h2>
-  {{ total_comments }} comment{{ total_comments|pluralize }}
-  </h2>
-  {% endwith %}
-
-  {% for comment in comments %}
-  <div class="comment">
-  <p class="info">
-    Comment {{ forloop.counter }} by {{ comment.name }}
-    {{ comment.created }}
-    </p>
-    {{ comment.body|linebreaks }}
-    <hr></hr>
-    </div>
-    {% empty %}
-    <p>There are no comments.</p>
-    {% endfor %}
-<!--Comments ending-->
-    {% include "post/includes/comment_form.html" %}
-
-        <!--Like Start -->
+ <!--Like Start -->
  <p>
   {% with total_likes=post.posts_like.count users_like=post.posts_like.all  %}
   
@@ -103,7 +74,47 @@ There are no Posts yet.
     {% endwith %}
   </p>
  <!--Like Ending -->
+ <br>
+ <br>
+
+<!--Similar_Post start-->
+<h2> Similar Posts </h2>
+{% for post in similar_posts%}
+<p>
+  <a href="{{ post.get_absolute_url }}">{{ post.title}}</a>
+</p>
+{% empty %}
+There are no Posts yet.
+{% endfor%}
 <hr></hr>
+<!--Similar_Post ending-->
+
+<!--Comments start-->
+{% include "post/includes/comment_form.html" %}
+
+    {% with comments.count as total_comments %}
+  <h2>
+  {{ total_comments }} comment{{ total_comments|pluralize }}
+  </h2>
+  {% endwith %}
+
+  {% for comment in comments %}
+  <div class="comment">
+  <p class="info">
+    Comment {{ forloop.counter }} by {{ comment.name }}
+    {{ comment.created }}
+    </p>
+    {{ comment.body|linebreaks }}
+    <br>
+    </div>
+    {% empty %}
+    <p>There are no comments.</p>
+    {% endfor %}
+<!--Comments ending-->
+    
+
+       
+
 {% endblock %}
 
 <!-- JavaScript for Like section-->
