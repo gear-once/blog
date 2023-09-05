@@ -1,0 +1,48 @@
+
+
+{% block title %}Create a Post{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+    <div class="form-field">
+        {{ form.title.label_tag }}*
+        {{ form.title }}
+    </div>
+
+    <div class="form-field">
+        {{ form.status.label_tag }}*
+        {{ form.status }}
+    </div>
+
+    <div class="form-field">
+        {{ form.image.label_tag }}
+        {{ form.image }}
+    </div>
+
+    <div class="form-field">
+        {{ form.body.label_tag }}*
+        {{ form.body }}
+    </div>
+
+    {% csrf_token %}
+
+    <div class="submit-button">
+        <input type="submit" value="Submit">
+    </div>
+</form>
+<p> * required fields </p>
+<style>
+    
+    .form-field {
+        margin-bottom: 20px;
+        /* Add spacing between form fields */
+    }
+    
+    .submit-button {
+        margin-top: 20px;
+        /* Add spacing above the submit button */
+    }
+</style>
+{% endblock %}

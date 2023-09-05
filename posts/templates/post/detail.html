@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block content %}
+<!--Post starting-->
+  <h1>{{ post.title }}</h1>
+
+  <!--Picture starting-->
+
+  {% if post.image %}
+  <img src="{{ post.image.url }}"class="myDiv">
+  {% endif %}
+
+ <style>
+  .myDiv{
+    border: 5px outset red;
+    height: 15rem;
+    witdh: 15rem;
+  }
+ </style>
+
+  <!--Picture Ending -->
+
+
+ <!--Body Staring -->
+  {{ post.body|linebreaks }}
+   <!--Body Ending -->
+   <hr></hr>
+
+
+  <p>
+    Published {{ post.publish }} by {{ post.author }} 
+  </p>
+  <p>
+    {% if post.tags.all %}
+    Tags: 
+      {% for tag in post.tags.all %}
+      <a href="{% url "blog:post_list_by_tag" tag.slug %}">
+        {{ tag.name }}
+      </a>
+      {% if not forloop.last %} | {% endif %}
+    {% endfor %}
+    {% endif %}
+  </p>
+ 
+  <hr>
+<!--Post ending-->
+
+<!--Similar_Post start-->
+<h2> SImilar Posts </h2>
+{% for post in similar_posts%}
+<p>
+  <a href="{{ post.get_absolute_url }}">{{ post.title}}</a>
+</p>
+{% empty %}
+There are no Posts yet.
+{% endfor%}
+<hr></hr>
+<!--Similar_Post ending-->
+
+<!--Comments start-->
+    {% with comments.count as total_comments %}
+  <h2>
+  {{ total_comments }} comment{{ total_comments|pluralize }}
+  </h2>
+  {% endwith %}
+
+  {% for comment in comments %}
+  <div class="comment">
+  <p class="info">
+    Comment {{ forloop.counter }} by {{ comment.name }}
+    {{ comment.created }}
+    </p>
+    {{ comment.body|linebreaks }}
+    <hr></hr>
+    </div>
+    {% empty %}
+    <p>There are no comments.</p>
+    {% endfor %}
+<!--Comments ending-->
+    {% include "post/includes/comment_form.html" %}
+
+        <!--Like Start -->
+ <p>
+  {% with total_likes=post.posts_like.count users_like=post.posts_like.all  %}
+  
+    
+    <span class="count">
+    <span class="total">{{ total_likes  }} </span>
+    like{{ total_likes|pluralize }}
+    </span>
+
+    <a href="#" data-id ="{{post.id}}" data-action="{% if request.user  in users_like %}un{% endif %}like"
+       class="like button">
+       {% if request.user not in users_like %}
+       Like
+       {% else %}
+       unlike
+       {% endif %}
+      </a>
+    
+    {% endwith %}
+  </p>
+ <!--Like Ending -->
+<hr></hr>
+{% endblock %}
+
+<!-- JavaScript for Like section-->
+{% block domready %}
+  const url = '{% url "posts:post_like" %}';
+  let options = {
+    method: 'POST',
+    headers: {'X-CSRFToken': csrftoken},
+    mode: 'same-origin'
+  }
+
+  document.querySelector('a.like')
+          .addEventListener('click', function(e){
+    e.preventDefault();
+    let likeButton = this;
+
+    // add request body
+    let formData = new FormData();
+    formData.append('id', likeButton.dataset.id);
+    formData.append('action', likeButton.dataset.action);
+    options['body'] = formData;
+
+    // send HTTP request
+    fetch(url, options)
+    .then(response => response.json())
+    .then(data => {
+      if (data['status'] === 'ok')
+      {
+        let previousAction = likeButton.dataset.action;
+
+        // toggle button text and data-action
+        let action = previousAction === 'like' ? 'unlike' : 'like';
+        likeButton.dataset.action = action;
+        likeButton.innerHTML = action;
+
+        // update like count
+        let likeCount = document.querySelector('span.count .total');
+        let totalLikes = parseInt(likeCount.innerHTML);
+        likeCount.innerHTML = previousAction === 'like' ? totalLikes + 1 : totalLikes - 1;
+      }
+    })
+  });
+{% endblock %}
