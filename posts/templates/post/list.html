@@ -14,6 +14,11 @@
         {{ post.title }}
       </a>
     </h2>
+
+    {{ post.body|truncatewords:30|linebreaks }}
+    <p class="date">
+      Published on : {{ post.publish }} by {{ post.author }}
+    </p>
     
     {% if post.tags.all %}
     <p class="tags">Tags: 
@@ -25,13 +30,8 @@
     {% endfor %}
     {% endif %}
     
-    <p class="date">
-      Published on : {{ post.publish }} by {{ post.author }}
-    </p>
-    <hr></hr>
-    <p> TextBody: </p>
-    {{ post.body|truncatewords:30|linebreaks }}
-    <hr>
+    <br>
+    
   {% endfor %}
   {% include "pagination.html" with page=posts %}
 {% endblock %}
